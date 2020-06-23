@@ -11,6 +11,8 @@ import com.gymondo.xrciser.R
 import com.gymondo.xrciser.data.Exercise
 import com.gymondo.xrciser.data.PagedResult
 import com.gymondo.xrciser.services.ExerciseService
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 
 import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Call
@@ -70,6 +72,7 @@ class MainActivity : AppCompatActivity() {
                 response: Response<PagedResult<Exercise>>?
             ) {
                 lastExerciseResult = response!!.body()!!
+//                allExercises.addAll(response!!.body()!!.results.filter {exercise: Exercise -> !exercise.name.isNullOrBlank()})
                 allExercises.addAll(response!!.body()!!.results)
                 recyclerView.adapter!!.notifyDataSetChanged()
                 loadingInProgress = false
@@ -83,10 +86,20 @@ class MainActivity : AppCompatActivity() {
 
         val service = ExerciseService.create()
 
-        val call = if (lastExerciseResult == null) service.getExercises()
+        val exercises = if (lastExerciseResult == null) service.getExercises()
                    else service.getPage(lastExerciseResult!!.next)
 
-        call.enqueue(displayOnLoad)
+        exercises.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+            { response : PagedResult<Exercise> ->
+                lastExerciseResult = response
+                // allExercises.addAll(response!!.body()!!.results.filter {exercise: Exercise -> !exercise.name.isNullOrBlank()})
+                allExercises.addAll(response.results)
+                recyclerView.adapter!!.notifyDataSetChanged()
+                loadingInProgress = false
+            },
+            { loadingInProgress = false })
     }
 
     private fun setRecyclerViewScrollListener() {
