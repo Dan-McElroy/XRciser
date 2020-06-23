@@ -9,8 +9,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.gymondo.xrciser.R
 import com.gymondo.xrciser.data.Exercise
-import com.gymondo.xrciser.data.ExerciseResult
-import com.gymondo.xrciser.services.WorkoutManagerService
+import com.gymondo.xrciser.data.PagedResult
+import com.gymondo.xrciser.services.ExerciseService
 
 import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Call
@@ -19,7 +19,9 @@ import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
 
-    var exerciseList = ArrayList<Exercise>()
+    var loadingInProgress: Boolean = false
+    var allExercises = ArrayList<Exercise>()
+    var lastExerciseResult: PagedResult<Exercise>? = null
     lateinit var recyclerView: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,9 +29,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
         recyclerView = findViewById(R.id.recycler_view)
+        setRecyclerViewScrollListener()
 
         // Set up adapter
-        recyclerView.adapter = ExerciseAdapter(exerciseList, this)
+        recyclerView.adapter = ExerciseAdapter(allExercises, this)
         recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
         fab.setOnClickListener { view ->
@@ -37,7 +40,7 @@ class MainActivity : AppCompatActivity() {
                 .setAction("Action", null).show()
         }
 
-        getData()
+        loadExercises()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -56,18 +59,65 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun getData() {
-        val call = WorkoutManagerService.create().getAllExercises()
-        call.enqueue(object: Callback<ExerciseResult> {
+    private fun loadExercises() {
 
-            override fun onResponse(call: Call<ExerciseResult>?, response: Response<ExerciseResult>?) {
-                exerciseList.addAll(response!!.body()!!.results)
+        loadingInProgress = true
+
+        val displayOnLoad = object : Callback<PagedResult<Exercise>> {
+
+            override fun onResponse(
+                call: Call<PagedResult<Exercise>>?,
+                response: Response<PagedResult<Exercise>>?
+            ) {
+                lastExerciseResult = response!!.body()!!
+                allExercises.addAll(response!!.body()!!.results)
                 recyclerView.adapter!!.notifyDataSetChanged()
+                loadingInProgress = false
             }
 
-            override fun onFailure(call: Call<ExerciseResult>, t: Throwable) {
-
+            override fun onFailure(call: Call<PagedResult<Exercise>>, t: Throwable) {
+                // TODO: Kill loading UI, report error
+                loadingInProgress = false
             }
-        })
+        }
+
+        val service = ExerciseService.create()
+
+        val call = if (lastExerciseResult == null) service.getExercises()
+                   else service.getPage(lastExerciseResult!!.next)
+
+        call.enqueue(displayOnLoad)
+    }
+
+    private fun setRecyclerViewScrollListener() {
+        val scrollListener = object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+
+                if (lastExerciseResult == null) {
+                    return
+                }
+                val linearLayoutManager: LinearLayoutManager =
+                    recyclerView.layoutManager as LinearLayoutManager
+
+                val visibleItemCount = linearLayoutManager.childCount
+                val totalItemCount = linearLayoutManager.itemCount
+                val firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition()
+
+                val isNotLoadingAndNotLastPage =
+                    !loadingInProgress && lastExerciseResult!!.next != null
+                val isAtLastItem = firstVisibleItemPosition + visibleItemCount >= totalItemCount
+                val isValidFirstItem = firstVisibleItemPosition >= 0
+                val totalIsMoreThanVisible = totalItemCount >= lastExerciseResult!!.results.count()
+
+                val shouldLoadMore = isNotLoadingAndNotLastPage && isAtLastItem
+                        && isValidFirstItem && totalIsMoreThanVisible
+
+                if (shouldLoadMore) {
+                    loadExercises()
+                }
+            }
+        }
+        recyclerView.addOnScrollListener(scrollListener)
     }
 }
