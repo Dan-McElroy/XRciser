@@ -65,31 +65,13 @@ class MainActivity : AppCompatActivity() {
 
         loadingInProgress = true
 
-        val displayOnLoad = object : Callback<PagedResult<Exercise>> {
-
-            override fun onResponse(
-                call: Call<PagedResult<Exercise>>?,
-                response: Response<PagedResult<Exercise>>?
-            ) {
-                lastExerciseResult = response!!.body()!!
-//                allExercises.addAll(response!!.body()!!.results.filter {exercise: Exercise -> !exercise.name.isNullOrBlank()})
-                allExercises.addAll(response!!.body()!!.results)
-                recyclerView.adapter!!.notifyDataSetChanged()
-                loadingInProgress = false
-            }
-
-            override fun onFailure(call: Call<PagedResult<Exercise>>, t: Throwable) {
-                // TODO: Kill loading UI, report error
-                loadingInProgress = false
-            }
-        }
-
         val service = ExerciseService.create()
 
         val exercises = if (lastExerciseResult == null) service.getExercises()
                    else service.getPage(lastExerciseResult!!.next)
 
-        exercises.subscribeOn(Schedulers.io())
+        exercises
+            .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
             { response : PagedResult<Exercise> ->
