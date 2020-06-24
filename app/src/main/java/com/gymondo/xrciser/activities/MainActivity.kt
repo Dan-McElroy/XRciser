@@ -100,7 +100,7 @@ class MainActivity : AppCompatActivity() {
                 val firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition()
 
                 val isNotLoadingAndNotLastPage =
-                    !loadingInProgress && lastExerciseResult!!.next != null
+                    !loadingInProgress && lastExerciseResult?.next != null
                 val isAtLastItem = firstVisibleItemPosition + visibleItemCount >= totalItemCount
                 val isValidFirstItem = firstVisibleItemPosition >= 0
                 val totalIsMoreThanVisible = totalItemCount >= lastExerciseResult!!.results.count()
