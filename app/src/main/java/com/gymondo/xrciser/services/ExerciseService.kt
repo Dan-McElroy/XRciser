@@ -15,7 +15,10 @@ import java.util.concurrent.TimeUnit
 interface ExerciseService {
 
     @GET("exercise")
-    fun getExercises() : Single<PagedResult<Exercise>>
+    fun getExercises(@Query("category") categoryId: Int? = null) : Single<PagedResult<Exercise>>
+
+    @GET("exerciseinfo/{id}")
+    fun getExerciseInfo(@Path("id") id: Int) : Single<ExerciseInfo>
 
     @GET
     fun getPage(@Url url: String) : Single<PagedResult<Exercise>>
