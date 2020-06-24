@@ -38,8 +38,18 @@ interface ExerciseService {
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .baseUrl("https://wger.de/api/v2/")
+                .client(getClient())
                 .build()
             return retrofit.create(ExerciseService::class.java)
+        }
+
+        private fun getClient(): OkHttpClient {
+
+            return OkHttpClient.Builder().apply {
+                readTimeout(20, TimeUnit.SECONDS)
+                writeTimeout(20, TimeUnit.SECONDS)
+                connectTimeout(20, TimeUnit.SECONDS)
+            }.build()
         }
     }
 }
