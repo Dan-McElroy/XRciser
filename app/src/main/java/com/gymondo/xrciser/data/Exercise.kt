@@ -12,13 +12,23 @@ data class Exercise (
     @SerializedName("name_original")
     val originalName : String,
     @SerializedName("creation_date")
-    val creationDate : String, // TODO: Date?
+    val creationDate : String,
     val uuid: String,
-    val license: Int, // TODO: Enum
-    val category: Int, // TODO: Enum
-    val language: Int, // TODO: Enum
-    val muscles: List<Int>, // TODO: Array<Enum>
+    val license: Int,
+    val category: Int,
+    val language: Int,
+    val muscles: List<Int>,
     @SerializedName("muscles_secondary")
-    val secondaryMuscles: List<Int>,   // TODO: Enum
-    val equipment: List<Int> // TODO: Enum
+    val secondaryMuscles: List<Int>,
+    val equipment: List<Int>
+)
+
+data class ExerciseInfo (
+    val name: String,
+    val category: Category,
+    val description: String,
+    val muscles: List<Muscle>,
+    @SerializedName("muscles_secondary")
+    val secondaryMuscles: List<Muscle>,
+    val equipment: List<Equipment>
 )
