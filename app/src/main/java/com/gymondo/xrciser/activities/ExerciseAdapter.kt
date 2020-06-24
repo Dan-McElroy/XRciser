@@ -1,11 +1,13 @@
 package com.gymondo.xrciser.activities
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.gymondo.xrciser.R
 import com.gymondo.xrciser.client.CategoryClient
@@ -16,7 +18,6 @@ import com.gymondo.xrciser.data.Equipment
 import com.gymondo.xrciser.data.Exercise
 import com.gymondo.xrciser.data.Muscle
 import com.squareup.picasso.Picasso
-import com.squareup.picasso.PicassoProvider
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -36,7 +37,10 @@ class ExerciseAdapter(private var exerciseList: List<Exercise>, private val cont
 
         val exercise = exerciseList[position]
 
+        holder.itemView.setOnClickListener(ExerciseCardOnClickListener(exercise))
+
         holder.exerciseName.text = exercise.name
+        holder.image.contentDescription = exercise.name
 
         loadCategory(holder, exercise)
         loadImage(holder, exercise)
@@ -59,7 +63,7 @@ class ExerciseAdapter(private var exerciseList: List<Exercise>, private val cont
                 Picasso.get().load(R.drawable.exercise).into(holder.image)
                 return@subscribe
             }
-            // TODO: Edge(?) case where exercise could have all non-main images
+            // TODO("Edge(?) case where exercise could have all non-main images")
             Picasso.get().load(images[0].url)
                 .placeholder(R.drawable.exercise)
                 .error(R.drawable.exercise)
@@ -107,11 +111,11 @@ class ExerciseAdapter(private var exerciseList: List<Exercise>, private val cont
 
     class ExerciseViewHolder(itemLayoutView: View) : RecyclerView.ViewHolder(itemLayoutView) {
 
-        lateinit var exerciseName: TextView
-        lateinit var categoryName: TextView
-        lateinit var equipmentList: TextView
-        lateinit var muscleList: TextView
-        lateinit var image: ImageView
+        var exerciseName: TextView
+        var categoryName: TextView
+        var equipmentList: TextView
+        var muscleList: TextView
+        var image: ImageView
 
         init {
             exerciseName = itemLayoutView.findViewById(R.id.exercise_name)
@@ -122,4 +126,13 @@ class ExerciseAdapter(private var exerciseList: List<Exercise>, private val cont
         }
     }
 
+    class ExerciseCardOnClickListener(val exercise : Exercise) : View.OnClickListener {
+
+        override fun onClick(v: View?) {
+            val intent = Intent(v!!.context, ExerciseInfoActivity::class.java).apply {
+                putExtra(EXERCISE_ID, exercise.id)
+            }
+            startActivity(v!!.context, intent, null)
+        }
+    }
 }
