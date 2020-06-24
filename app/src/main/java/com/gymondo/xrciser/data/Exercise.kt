@@ -3,7 +3,7 @@ package com.gymondo.xrciser.data
 import com.google.gson.annotations.SerializedName
 
 data class Exercise (
-    val id: String,
+    val id: Int,
     @SerializedName("license_author")
     val licenseAuthor: String,
     val status: String,

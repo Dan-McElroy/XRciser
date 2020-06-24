@@ -3,11 +3,14 @@ package com.gymondo.xrciser.services
 import com.gymondo.xrciser.data.*
 import io.reactivex.Observable
 import io.reactivex.Single
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
+import java.util.concurrent.TimeUnit
 
 interface ExerciseService {
 
@@ -25,6 +28,9 @@ interface ExerciseService {
 
     @GET("muscle/{id}")
     fun getMuscle(@Path("id") id: Int) : Observable<Muscle>
+
+    @GET("exerciseimage")
+    fun getImages(@Query("exercise") exerciseId: Int) : Single<PagedResult<ExerciseImage>>
 
     companion object {
         fun create(): ExerciseService {
