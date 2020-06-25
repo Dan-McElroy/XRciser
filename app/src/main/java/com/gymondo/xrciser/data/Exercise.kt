@@ -21,7 +21,10 @@ data class Exercise (
     @SerializedName("muscles_secondary")
     val secondaryMuscles: List<Int>,
     val equipment: List<Int>
-)
+) {
+    val allMuscles : List<Int>
+        get() = muscles + secondaryMuscles
+}
 
 data class ExerciseInfo (
     val name: String,
@@ -31,4 +34,7 @@ data class ExerciseInfo (
     @SerializedName("muscles_secondary")
     val secondaryMuscles: List<Muscle>,
     val equipment: List<Equipment>
-)
+) {
+    val allMuscles : List<Muscle>
+            get() = muscles + secondaryMuscles
+}

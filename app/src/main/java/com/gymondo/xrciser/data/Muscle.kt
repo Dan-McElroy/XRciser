@@ -7,4 +7,9 @@ data class Muscle (
     val name: String,
     @SerializedName("is_front")
     val isFront: Boolean
-)
+) {
+    override fun toString(): String {
+        val sideText = if (isFront) "Front" else "Back"
+        return "$name (${sideText})"
+    }
+}

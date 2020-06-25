@@ -14,6 +14,7 @@
         <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="240dp">
+
             <LinearLayout
                 android:id="@+id/image_list"
                 android:layout_width="match_parent"
@@ -21,6 +22,7 @@
                 android:orientation="horizontal">
 
             </LinearLayout>
+
         </HorizontalScrollView>
 
         <TextView
@@ -38,18 +40,21 @@
             android:layout_gravity="center"
             android:maxLines="1" />
 
-        <TextView
+        <LinearLayout
             android:id="@+id/equipment_list"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:maxLines="1" />
+            android:layout_height="match_parent"
+            android:layout_marginTop="6dp"
+            android:orientation="vertical">
+        </LinearLayout>
 
-        <TextView
+        <LinearLayout
             android:id="@+id/muscle_list"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:maxLines="1" />
+            android:layout_height="match_parent"
+            android:layout_marginTop="6dp"
+            android:orientation="vertical">
+        </LinearLayout>
+
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
