@@ -1,9 +1,13 @@
 package com.gymondo.xrciser.activities
 
 import android.os.Bundle
+import android.text.Layout
 import android.util.AttributeSet
+import android.view.LayoutInflater
+import android.view.View.inflate
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import android.widget.TextView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
@@ -96,28 +100,42 @@ class ExerciseInfoActivity : AppCompatActivity() {
     }
 
     private fun addImageView(image : ExerciseImage?) {
-        val imageView = ImageView(this)
-        imageList.addView(imageView)
+        val imageView = addImage()
         if (image is ExerciseImage) {
             Picasso.get().load(image.url)
+                .resizeDimen(R.dimen.info_image_width, R.dimen.info_image_height)
+                .centerInside()
                 .placeholder(R.drawable.exercise)
                 .error(R.drawable.exercise)
                 .into(imageView)
             imageView.contentDescription = exerciseInfo.name
         } else {
-            Picasso.get().load(R.drawable.exercise).into(imageView)
+            Picasso.get().load(R.drawable.exercise)
+                .resizeDimen(R.dimen.info_image_width, R.dimen.info_image_height)
+                .centerInside()
+                .into(imageView)
         }
     }
 
     private fun addEquipmentText(equipment: Equipment?) {
-        val textView = TextView(this)
+        val textView = addTextRow(equipmentList)
         textView.text = if (equipment is Equipment) equipment.name else "None"
-        equipmentList.addView(textView)
     }
 
     private fun addMuscleText(muscle: Muscle?) {
-        val textView = TextView(this)
+        val textView = addTextRow(muscleList)
         textView.text = if (muscle is Muscle) muscle.toString() else "None"
-        muscleList.addView(textView)
+    }
+
+    private fun addTextRow(layout : LinearLayout) : TextView {
+        val view = LayoutInflater.from(layout.context).inflate(R.layout.exercise_info_text, layout, false) as TextView
+        layout.addView(view)
+        return view
+    }
+
+    private fun addImage() : ImageView {
+        val view = LayoutInflater.from(imageList.context).inflate(R.layout.exercise_info_image, null, false) as ImageView
+        imageList.addView(view)
+        return view
     }
 }

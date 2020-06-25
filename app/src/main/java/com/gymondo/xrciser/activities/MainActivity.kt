@@ -15,9 +15,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
 import kotlinx.android.synthetic.main.activity_main.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
 
@@ -76,7 +73,6 @@ class MainActivity : AppCompatActivity() {
             .subscribe(
             { response : PagedResult<Exercise> ->
                 lastExerciseResult = response
-                // allExercises.addAll(response!!.body()!!.results.filter {exercise: Exercise -> !exercise.name.isNullOrBlank()})
                 allExercises.addAll(response.results)
                 recyclerView.adapter!!.notifyDataSetChanged()
                 loadingInProgress = false

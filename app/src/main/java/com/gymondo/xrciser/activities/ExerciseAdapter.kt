@@ -73,8 +73,10 @@ class ExerciseAdapter(private var exerciseList: List<Exercise>, private val cont
 
     private fun loadEquipment(holder: ExerciseViewHolder, exercise: Exercise) {
 
+        val equipment = context.getString(R.string.equipment)
+
         if (exercise.equipment.none()) {
-            holder.equipmentList.text = "None"
+            holder.equipmentList.text = "$equipment None"
         }
 
         val equipmentRequests : List<Observable<Equipment>> = exercise.equipment.map(EquipmentClient::getEquipment)
@@ -84,27 +86,29 @@ class ExerciseAdapter(private var exerciseList: List<Exercise>, private val cont
             }.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                { listText -> holder.equipmentList.text = listText },
+                { listText ->
+                    val equipment = context.getString(R.string.equipment)
+                    holder.equipmentList.text = "$equipment $listText" },
                 { holder.equipmentList.text = "Equipment not found." }
             )
     }
 
     private fun loadMuscles(holder: ExerciseViewHolder, exercise: Exercise) {
 
-        val allMuscleIds = exercise.muscles + exercise.secondaryMuscles
+        val muscles = context.getString(R.string.muscles)
 
-        if (allMuscleIds.none()) {
-            holder.muscleList.text = "None"
+        if (exercise.allMuscles.none()) {
+            holder.muscleList.text = "$muscles None"
         }
 
-        val muscleRequests : List<Observable<Muscle>> = allMuscleIds.map(MuscleClient::getMuscle)
+        val muscleRequests : List<Observable<Muscle>> = exercise.allMuscles.map(MuscleClient::getMuscle)
 
         Observable.zip(muscleRequests) { results: Array<Any> ->
             results.joinToString(", ") { result -> (result as Muscle).name }
         }.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                { listText -> holder.muscleList.text = listText },
+                { listText -> holder.muscleList.text = "$muscles $listText" },
                 { holder.muscleList.text = "Muscle(s) not found." }
             )
     }
