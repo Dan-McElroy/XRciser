@@ -1,6 +1,7 @@
 package com.gymondo.xrciser.client
 
 import com.gymondo.xrciser.data.Category
+import com.gymondo.xrciser.data.PagedResult
 import com.gymondo.xrciser.services.ExerciseService
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -22,5 +23,26 @@ object CategoryClient {
         observable
             .subscribe { result -> categories[result.id] = result }
         return observable
+    }
+
+    init {
+        ExerciseService.create().getCategories()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(this::initPage)
+    }
+
+    private fun initPage(result : PagedResult<Category>) {
+        for (category in result.results) {
+            categories[category.id] = category
+        }
+        if (result.next != null) {
+            ExerciseService.create().getCategoryPage(result.next)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::initPage)
+        } else {
+
+        }
     }
 }

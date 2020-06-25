@@ -21,10 +21,16 @@ interface ExerciseService {
     fun getExerciseInfo(@Path("id") id: Int) : Single<ExerciseInfo>
 
     @GET
-    fun getPage(@Url url: String) : Single<PagedResult<Exercise>>
+    fun getExercisePage(@Url url: String) : Single<PagedResult<Exercise>>
 
     @GET("exercisecategory/{id}")
     fun getCategory(@Path("id") id: Int) : Single<Category>
+
+    @GET("exercisecategory")
+    fun getCategories() : Single<PagedResult<Category>>
+
+    @GET
+    fun getCategoryPage(@Url url: String) : Single<PagedResult<Category>>
 
     @GET("equipment/{id}")
     fun getEquipment(@Path("id") id: Int) : Observable<Equipment>

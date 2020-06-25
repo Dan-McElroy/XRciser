@@ -22,11 +22,11 @@ class MainActivity : AppCompatActivity() {
     var allExercises = ArrayList<Exercise>()
     var lastExerciseResult: PagedResult<Exercise>? = null
     lateinit var recyclerView: RecyclerView
+    var selectedCategoryId: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
         recyclerView = findViewById(R.id.recycler_view)
         setRecyclerViewScrollListener()
 
@@ -35,8 +35,7 @@ class MainActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
         fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+            loadExercises(11)
         }
 
         loadExercises()
@@ -58,14 +57,20 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadExercises() {
-
+    private fun loadExercises(categoryId: Int? = null) {
         loadingInProgress = true
 
         val service = ExerciseService.create()
 
-        val exercises = if (lastExerciseResult == null) service.getExercises()
-                   else service.getPage(lastExerciseResult!!.next)
+        val shouldRefresh = lastExerciseResult == null || selectedCategoryId != categoryId
+
+        if (shouldRefresh) {
+            allExercises.clear()
+            recyclerView.adapter!!.notifyDataSetChanged()
+        }
+
+        val exercises = if (shouldRefresh) service.getExercises(categoryId)
+                   else service.getExercisePage(lastExerciseResult!!.next)
 
         exercises
             .subscribeOn(Schedulers.io())
