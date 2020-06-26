@@ -1,11 +1,9 @@
 package com.gymondo.xrciser.services
 
 import com.gymondo.xrciser.data.*
+import io.reactivex.Maybe
 import io.reactivex.Observable
-import io.reactivex.Single
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -15,22 +13,22 @@ import java.util.concurrent.TimeUnit
 interface ExerciseService {
 
     @GET("exercise?status=2")
-    fun getExercises(@Query("category") categoryId: Int? = null) : Single<PagedResult<Exercise>>
+    fun getExercises(@Query("category") categoryId: Int? = null) : Maybe<PagedResult<Exercise>>
 
     @GET("exerciseinfo/{id}")
-    fun getExerciseInfo(@Path("id") id: Int) : Single<ExerciseInfo>
+    fun getExerciseInfo(@Path("id") id: Int) : Maybe<ExerciseInfo>
 
     @GET
-    fun getExercisePage(@Url url: String) : Single<PagedResult<Exercise>>
+    fun getExercisePage(@Url url: String) : Maybe<PagedResult<Exercise>>
 
     @GET("exercisecategory/{id}")
-    fun getCategory(@Path("id") id: Int) : Single<Category>
+    fun getCategory(@Path("id") id: Int) : Maybe<Category>
 
     @GET("exercisecategory")
-    fun getCategories() : Single<PagedResult<Category>>
+    fun getCategories() : Maybe<PagedResult<Category>>
 
     @GET
-    fun getCategoryPage(@Url url: String) : Single<PagedResult<Category>>
+    fun getCategoryPage(@Url url: String) : Maybe<PagedResult<Category>>
 
     @GET("equipment/{id}")
     fun getEquipment(@Path("id") id: Int) : Observable<Equipment>
@@ -39,7 +37,7 @@ interface ExerciseService {
     fun getMuscle(@Path("id") id: Int) : Observable<Muscle>
 
     @GET("exerciseimage")
-    fun getImages(@Query("exercise") exerciseId: Int) : Single<PagedResult<ExerciseImage>>
+    fun getImages(@Query("exercise") exerciseId: Int) : Maybe<PagedResult<ExerciseImage>>
 
     companion object {
         fun create(): ExerciseService {
