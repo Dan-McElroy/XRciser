@@ -4,6 +4,8 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.ProgressBar
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.gymondo.xrciser.R
@@ -13,15 +15,17 @@ import com.gymondo.xrciser.fragments.CategoryFilterDialogFragment
 import com.gymondo.xrciser.services.ExerciseService
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.BehaviorSubject
 
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), CategoryFilterDialogFragment.Filterable {
 
-    var loadingInProgress: Boolean = false
+    var loadingInProgress: BehaviorSubject<Boolean> = BehaviorSubject.create()
     var allExercises = ArrayList<Exercise>()
     var lastExerciseResult: PagedResult<Exercise>? = null
     lateinit var recyclerView: RecyclerView
+    lateinit var loadingSpinner: ProgressBar
     var selectedCategoryId: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,6 +37,15 @@ class MainActivity : AppCompatActivity(), CategoryFilterDialogFragment.Filterabl
         // Set up adapter
         recyclerView.adapter = ExerciseAdapter(allExercises, this)
         recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+
+        // Set up loading spinner
+        loadingSpinner = findViewById(R.id.loading_progress)
+        loadingInProgress.onNext(true)
+        loadingInProgress
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { loading -> loadingSpinner.isVisible = loading }
+
 
         topAppBar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
@@ -69,9 +82,7 @@ class MainActivity : AppCompatActivity(), CategoryFilterDialogFragment.Filterabl
 
     private fun loadExercises(categoryId: Int? = selectedCategoryId) {
 
-        val shouldRefresh =
-            (lastExerciseResult == null && !loadingInProgress)
-                || selectedCategoryId != categoryId
+        val shouldRefresh = lastExerciseResult == null || selectedCategoryId != categoryId
 
         if (shouldRefresh) {
             allExercises.clear()
@@ -79,7 +90,7 @@ class MainActivity : AppCompatActivity(), CategoryFilterDialogFragment.Filterabl
         }
 
         selectedCategoryId = categoryId
-        loadingInProgress = true
+        loadingInProgress.onNext(true)
 
         val service = ExerciseService.create()
         val exercises = if (shouldRefresh) service.getExercises(categoryId)
@@ -93,9 +104,9 @@ class MainActivity : AppCompatActivity(), CategoryFilterDialogFragment.Filterabl
                 lastExerciseResult = response
                 allExercises.addAll(response.results)
                 recyclerView.adapter!!.notifyDataSetChanged()
-                loadingInProgress = false
+                loadingInProgress.onNext(false)
             },
-            { loadingInProgress = false })
+            { loadingInProgress.onNext(false) })
     }
 
     private fun setRecyclerViewScrollListener() {
@@ -114,7 +125,7 @@ class MainActivity : AppCompatActivity(), CategoryFilterDialogFragment.Filterabl
                 val firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition()
 
                 val isNotLoadingAndNotLastPage =
-                    !loadingInProgress && lastExerciseResult?.next != null
+                    !loadingInProgress.value && lastExerciseResult?.next != null
                 val isAtLastItem = firstVisibleItemPosition + visibleItemCount >= totalItemCount
                 val isValidFirstItem = firstVisibleItemPosition >= 0
                 val totalIsMoreThanVisible = totalItemCount >= lastExerciseResult!!.results.count()
