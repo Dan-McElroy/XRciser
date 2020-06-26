@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.ProgressBar
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.gymondo.xrciser.R
 import com.gymondo.xrciser.data.Exercise
 import com.gymondo.xrciser.data.PagedResult
+import com.gymondo.xrciser.extensions.makeSnackbar
 import com.gymondo.xrciser.fragments.CategoryFilterDialogFragment
 import com.gymondo.xrciser.services.ExerciseService
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -105,8 +107,13 @@ class MainActivity : AppCompatActivity(), CategoryFilterDialogFragment.Filterabl
                 allExercises.addAll(response.results)
                 recyclerView.adapter!!.notifyDataSetChanged()
                 loadingInProgress.onNext(false)
-            },
-            { loadingInProgress.onNext(false) })
+            }, {
+                val retryListener = object : View.OnClickListener {
+                    override fun onClick(v: View?) = loadExercises()
+                }
+                makeSnackbar(R.string.error_loading_exercises, R.string.retry, retryListener)
+                loadingInProgress.onNext(false)
+            })
     }
 
     private fun setRecyclerViewScrollListener() {
