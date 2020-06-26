@@ -25,11 +25,7 @@
     android:paddingBottom="@dimen/list_item_spacing_half"
     tools:context=".fragments.CategoryFilterDialogFragment">
 
-    <RadioButton
-        android:id="@+id/filter_option_reset"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/filter_option_reset" />
+    <include layout="@layout/category_filter_option"/>
 
 </RadioGroup>
 

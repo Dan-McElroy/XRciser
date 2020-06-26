@@ -24,7 +24,7 @@ const val SELECTED_CATEGORY_ID = "selected_category"
  */
 class CategoryFilterDialogFragment : BottomSheetDialogFragment() {
 
-    lateinit var filterListener : CategoryFilterListener
+    lateinit var filterListener : Filterable
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,24 +41,24 @@ class CategoryFilterDialogFragment : BottomSheetDialogFragment() {
             .setOnClickListener(FilterOnClickListener(null, filterListener))
 
         CategoryClient.getAllCached().forEach { category ->
-            val radioButton = RadioButton(context)
+            val radioButton =  RadioButton.inflate(context,
+                R.layout.category_filter_option, null) as RadioButton
             radioButton.id = category.id
             radioButton.text = category.name
             radioButton.setOnClickListener(FilterOnClickListener(category.id, filterListener))
             radioGroup.addView(radioButton)
         }
-        var selectedCategoryId = savedInstanceState?.get(SELECTED_CATEGORY_ID)
-        if (selectedCategoryId is Int) {
-            radioGroup.check(selectedCategoryId)
-        }
+        var selectedCategoryId = arguments?.get(SELECTED_CATEGORY_ID) as? Int
+            ?: R.id.filter_option_reset
+        radioGroup.check(selectedCategoryId)
 
     }
 
-    interface CategoryFilterListener {
+    interface Filterable {
         fun onFilterChanged(categoryId: Int?)
     }
 
-    private class FilterOnClickListener(val categoryId : Int?, val filterListener: CategoryFilterListener) : View.OnClickListener {
+    private class FilterOnClickListener(val categoryId : Int?, val filterListener: Filterable) : View.OnClickListener {
 
         override fun onClick(v: View?) {
             filterListener.onFilterChanged(categoryId)

@@ -16,7 +16,7 @@ import io.reactivex.schedulers.Schedulers
 
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity(), CategoryFilterDialogFragment.CategoryFilterListener {
+class MainActivity : AppCompatActivity(), CategoryFilterDialogFragment.Filterable {
 
     var loadingInProgress: Boolean = false
     var allExercises = ArrayList<Exercise>()
@@ -67,7 +67,7 @@ class MainActivity : AppCompatActivity(), CategoryFilterDialogFragment.CategoryF
         loadExercises(categoryId)
     }
 
-    private fun loadExercises(categoryId: Int? = null) {
+    private fun loadExercises(categoryId: Int? = selectedCategoryId) {
 
         val shouldRefresh =
             (lastExerciseResult == null && !loadingInProgress)
