@@ -1,7 +1,6 @@
 package com.gymondo.xrciser.activities
 
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
@@ -10,13 +9,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.gymondo.xrciser.R
 import com.gymondo.xrciser.data.Exercise
 import com.gymondo.xrciser.data.PagedResult
+import com.gymondo.xrciser.fragments.CategoryFilterDialogFragment
 import com.gymondo.xrciser.services.ExerciseService
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), CategoryFilterDialogFragment.CategoryFilterListener {
 
     var loadingInProgress: Boolean = false
     var allExercises = ArrayList<Exercise>()
@@ -34,8 +34,14 @@ class MainActivity : AppCompatActivity() {
         recyclerView.adapter = ExerciseAdapter(allExercises, this)
         recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
-        fab.setOnClickListener { view ->
-            loadExercises(11)
+        topAppBar.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.filter -> {
+                    openFilterMenu()
+                    true
+                }
+                else -> false
+            }
         }
 
         loadExercises()
@@ -57,18 +63,25 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onFilterChanged(categoryId: Int?) {
+        loadExercises(categoryId)
+    }
+
     private fun loadExercises(categoryId: Int? = null) {
-        loadingInProgress = true
 
-        val service = ExerciseService.create()
-
-        val shouldRefresh = lastExerciseResult == null || selectedCategoryId != categoryId
+        val shouldRefresh =
+            (lastExerciseResult == null && !loadingInProgress)
+                || selectedCategoryId != categoryId
 
         if (shouldRefresh) {
             allExercises.clear()
             recyclerView.adapter!!.notifyDataSetChanged()
         }
 
+        selectedCategoryId = categoryId
+        loadingInProgress = true
+
+        val service = ExerciseService.create()
         val exercises = if (shouldRefresh) service.getExercises(categoryId)
                    else service.getExercisePage(lastExerciseResult!!.next)
 
@@ -115,5 +128,11 @@ class MainActivity : AppCompatActivity() {
             }
         }
         recyclerView.addOnScrollListener(scrollListener)
+    }
+
+    private fun openFilterMenu() {
+        val filterSheet = CategoryFilterDialogFragment.newInstance(selectedCategoryId)
+        filterSheet.filterListener = this
+        filterSheet.show(supportFragmentManager, "filterDialogFragment")
     }
 }

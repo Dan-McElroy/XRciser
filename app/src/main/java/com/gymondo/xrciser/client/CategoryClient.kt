@@ -25,6 +25,8 @@ object CategoryClient {
         return observable
     }
 
+    fun getAllCached() : List<Category> = categories.values.toList()
+
     init {
         ExerciseService.create().getCategories()
             .subscribeOn(Schedulers.io())

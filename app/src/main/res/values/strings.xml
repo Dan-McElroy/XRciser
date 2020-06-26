@@ -1,10 +1,14 @@
 <resources>
     <string name="app_name">XRciser</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_main">Exercises</string>
     <string name="title_activity_exercise">Exercise</string>
     <string name="front">(Front)</string>
     <string name="back">(Back)</string>
     <string name="equipment">Equipment Required:</string>
     <string name="muscles">Muscles Used:</string>
     <string name="category">Category:</string>
+    <string name="content_description_filter">See all exercises for:</string>
+    <string name="filter">Filter</string>
+    <string name="filter_option_reset">All</string>
 </resources>
