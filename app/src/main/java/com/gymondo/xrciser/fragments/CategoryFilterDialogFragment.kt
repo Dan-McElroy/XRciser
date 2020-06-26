@@ -40,7 +40,9 @@ class CategoryFilterDialogFragment : BottomSheetDialogFragment() {
         view.findViewById<RadioButton>(R.id.filter_option_reset)
             .setOnClickListener(FilterOnClickListener(null, filterListener))
 
-        CategoryClient.getAllCached().forEach { category ->
+        CategoryClient.getAllCached()
+            .sortedBy { category -> category.name }
+            .forEach { category ->
             val radioButton =  RadioButton.inflate(context,
                 R.layout.category_filter_option, null) as RadioButton
             radioButton.id = category.id
