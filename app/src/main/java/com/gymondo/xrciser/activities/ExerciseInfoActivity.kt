@@ -98,15 +98,13 @@ class ExerciseInfoActivity : AppCompatActivity() {
         val imageView = addImage()
         if (image is ExerciseImage) {
             Picasso.get().load(image.url)
-                .resizeDimen(R.dimen.info_image_width, R.dimen.info_image_height)
-                .centerInside()
-                .placeholder(R.drawable.exercise)
+                .placeholder(R.drawable.ic_hourglass_empty_24px)
                 .error(R.drawable.exercise)
+                .centerInside()
                 .into(imageView)
             imageView.contentDescription = exerciseInfo.name
         } else {
             Picasso.get().load(R.drawable.exercise)
-                .resizeDimen(R.dimen.info_image_width, R.dimen.info_image_height)
                 .centerInside()
                 .into(imageView)
         }

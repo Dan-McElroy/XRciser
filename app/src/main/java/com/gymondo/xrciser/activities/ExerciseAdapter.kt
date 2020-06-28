@@ -65,7 +65,7 @@ class ExerciseAdapter(private var exerciseList: List<Exercise>, private val cont
             }
             // TODO("Edge(?) case where exercise could have all non-main images")
             Picasso.get().load(images[0].url)
-                .placeholder(R.drawable.exercise)
+                .placeholder(R.drawable.ic_hourglass_empty_24px)
                 .error(R.drawable.exercise)
                 .into(holder.image)
         }
