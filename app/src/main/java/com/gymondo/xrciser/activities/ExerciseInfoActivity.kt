@@ -99,7 +99,7 @@ class ExerciseInfoActivity : AppCompatActivity() {
         if (image is ExerciseImage) {
             Picasso.get().load(image.url)
                 .placeholder(R.drawable.ic_hourglass_empty_24px)
-                .error(R.drawable.exercise)
+                .error(R.drawable.ic_error_outline_24px)
                 .centerInside()
                 .into(imageView)
             imageView.contentDescription = exerciseInfo.name
