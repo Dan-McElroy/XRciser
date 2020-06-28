@@ -8,9 +8,11 @@
     <string name="equipment">Equipment Required:</string>
     <string name="muscles">Muscles Used:</string>
     <string name="category">Category:</string>
-    <string name="content_description_filter">See all exercises for:</string>
+    <string name="search">Search</string>
+    <string name="search_hint_text">Search for an exercise by name...</string>
     <string name="filter">Filter</string>
     <string name="filter_option_reset">All</string>
+    <string name="content_description_filter">See all exercises for:</string>
     <string name="error_loading_exercises">Failed to load exercises.</string>
     <string name="retry">Retry?</string>
 </resources>

@@ -1,28 +1,27 @@
 package com.gymondo.xrciser.activities
 
+import android.app.SearchManager
+import android.app.SearchableInfo
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.widget.ProgressBar
+import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.gymondo.xrciser.R
 import com.gymondo.xrciser.client.ExerciseClient
-import com.gymondo.xrciser.data.Exercise
-import com.gymondo.xrciser.data.PagedResult
-import com.gymondo.xrciser.extensions.makeSnackbar
 import com.gymondo.xrciser.fragments.CategoryFilterDialogFragment
-import com.gymondo.xrciser.services.ExerciseService
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.BehaviorSubject
 
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity(), CategoryFilterDialogFragment.Filterable {
+class MainActivity : AppCompatActivity(), CategoryFilterDialogFragment.Filterable, SearchView.OnQueryTextListener {
 
     lateinit var recyclerView: RecyclerView
     lateinit var loadingSpinner: ProgressBar
@@ -30,6 +29,7 @@ class MainActivity : AppCompatActivity(), CategoryFilterDialogFragment.Filterabl
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        setSupportActionBar(findViewById(R.id.topAppBar))
         recyclerView = findViewById(R.id.recycler_view)
         setRecyclerViewScrollListener()
 
@@ -63,23 +63,34 @@ class MainActivity : AppCompatActivity(), CategoryFilterDialogFragment.Filterabl
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.top_app_bar, menu)
+
+        val searchItem: MenuItem? = menu?.findItem(R.id.search)
+        val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        val searchView: SearchView? = searchItem?.actionView as SearchView
+        val searchableInfo: SearchableInfo? = searchManager.getSearchableInfo(componentName)
+
+        searchView?.setSearchableInfo(searchableInfo)
+        searchView?.setOnQueryTextListener(this)
+        searchView?.setIconifiedByDefault(true)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        ExerciseClient.loadExercises(searchTerm = query)
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        return when (item.itemId) {
-            R.id.action_settings -> true
-            else -> super.onOptionsItemSelected(item)
+    override fun onQueryTextChange(newText: String?): Boolean {
+        // Prevents new exercises from being loaded
+        if (ExerciseClient.currentSearchTerm is String && newText?.isBlank() == true) {
+            ExerciseClient.loadExercises(searchTerm = newText)
         }
+        return true
     }
 
     override fun onFilterChanged(categoryId: Int?) {
-        ExerciseClient.loadExercises(categoryId)
+        ExerciseClient.loadExercises(categoryId = categoryId)
     }
 
     private fun setRecyclerViewScrollListener() {

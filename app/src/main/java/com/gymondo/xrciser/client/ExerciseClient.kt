@@ -32,18 +32,26 @@ object ExerciseClient {
     var loadedAllResults: Boolean = false
         get() = !loadingInProgress.value && nextPageUrl == null
 
+    var currentSearchTerm = filteredSearchTerm
+        get() = filteredSearchTerm
+
     init {
         loadingInProgress.onNext(false)
 
     }
 
-    fun loadExercises(categoryId : Int? = selectedCategory, searchTerm: String? = filteredSearchTerm) {
+    fun loadExercises(categoryId : Int? = filteredCategoryId, searchTerm: String? = filteredSearchTerm) {
 
         loadingInProgress.onNext(true)
 
+        val trimmedSearchTerm = searchTerm?.trim()
+
         val shouldRefresh = shownResults.none()
                 || filteredCategoryId != categoryId
-                || filteredSearchTerm != searchTerm
+                || filteredSearchTerm != trimmedSearchTerm
+
+        filteredCategoryId = categoryId
+        filteredSearchTerm = trimmedSearchTerm
 
         if (shouldRefresh) {
             clearShownResults()
@@ -64,24 +72,22 @@ object ExerciseClient {
     }
 
     private fun receivePagedResult(result : PagedResult<Exercise>, resultsForPage : List<Exercise> ) {
-        if (filteredSearchTerm == null) {
+        if (filteredSearchTerm.isNullOrBlank()) {
             updateShownResults(result.results)
             nextPageUrl = result.next
             loadingInProgress.onNext(false)
             return
         }
 
-
         val filteredResults = result.results.filter { exercise -> exercise.nameMatches(filteredSearchTerm!!) }
             .union(resultsForPage)
-            .intersect(shownResults)
+            .minus(shownResults)
         if (filteredResults.count() >= pageSize) {
             // We don't change nextPageUrl here, as we want to reload this "server page" and take the rest of it
             // for the next "client page".
             updateShownResults(filteredResults.take(pageSize))
             return
         }
-
 
         nextPageUrl = result.next
         if (nextPageUrl is String) {
@@ -92,7 +98,7 @@ object ExerciseClient {
                     { TODO("Throw an error here to be handled in the activity with a Snackbar") })
         }
         else {
-            updateShownResults(result.results)
+            updateShownResults(filteredResults.toList())
             loadingInProgress.onNext(false)
         }
     }
