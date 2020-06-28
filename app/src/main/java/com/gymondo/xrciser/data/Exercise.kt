@@ -24,6 +24,10 @@ data class Exercise (
 ) {
     val allMuscles : List<Int>
         get() = muscles + secondaryMuscles
+
+    fun nameMatches(searchTerm: String) : Boolean {
+        return name.contains(searchTerm, true) || originalName.contains(searchTerm, true)
+    }
 }
 
 data class ExerciseInfo (

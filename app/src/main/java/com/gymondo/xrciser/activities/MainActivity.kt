@@ -10,6 +10,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.gymondo.xrciser.R
+import com.gymondo.xrciser.client.ExerciseClient
 import com.gymondo.xrciser.data.Exercise
 import com.gymondo.xrciser.data.PagedResult
 import com.gymondo.xrciser.extensions.makeSnackbar
@@ -23,12 +24,8 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), CategoryFilterDialogFragment.Filterable {
 
-    var loadingInProgress: BehaviorSubject<Boolean> = BehaviorSubject.create()
-    var allExercises = ArrayList<Exercise>()
-    var lastExerciseResult: PagedResult<Exercise>? = null
     lateinit var recyclerView: RecyclerView
     lateinit var loadingSpinner: ProgressBar
-    var selectedCategoryId: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,17 +34,20 @@ class MainActivity : AppCompatActivity(), CategoryFilterDialogFragment.Filterabl
         setRecyclerViewScrollListener()
 
         // Set up adapter
-        recyclerView.adapter = ExerciseAdapter(allExercises, this)
+        recyclerView.adapter = ExerciseAdapter(ExerciseClient.results, this)
         recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
         // Set up loading spinner
         loadingSpinner = findViewById(R.id.loading_progress)
-        loadingInProgress.onNext(true)
-        loadingInProgress
+        ExerciseClient.loadingInProgress
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { loading -> loadingSpinner.isVisible = loading }
 
+        ExerciseClient.resultsChanged
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { recyclerView.adapter!!.notifyDataSetChanged() }
 
         topAppBar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
@@ -59,12 +59,12 @@ class MainActivity : AppCompatActivity(), CategoryFilterDialogFragment.Filterabl
             }
         }
 
-        loadExercises()
+        ExerciseClient.loadExercises()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.menu_main, menu)
+        menuInflater.inflate(R.menu.top_app_bar, menu)
         return true
     }
 
@@ -79,41 +79,7 @@ class MainActivity : AppCompatActivity(), CategoryFilterDialogFragment.Filterabl
     }
 
     override fun onFilterChanged(categoryId: Int?) {
-        loadExercises(categoryId)
-    }
-
-    private fun loadExercises(categoryId: Int? = selectedCategoryId) {
-
-        val shouldRefresh = lastExerciseResult == null || selectedCategoryId != categoryId
-
-        if (shouldRefresh) {
-            allExercises.clear()
-            recyclerView.adapter!!.notifyDataSetChanged()
-        }
-
-        selectedCategoryId = categoryId
-        loadingInProgress.onNext(true)
-
-        val service = ExerciseService.create()
-        val exercises = if (shouldRefresh) service.getExercises(categoryId)
-                   else service.getExercisePage(lastExerciseResult!!.next)
-
-        exercises
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-            { response : PagedResult<Exercise> ->
-                lastExerciseResult = response
-                allExercises.addAll(response.results)
-                recyclerView.adapter!!.notifyDataSetChanged()
-                loadingInProgress.onNext(false)
-            }, {
-                val retryListener = object : View.OnClickListener {
-                    override fun onClick(v: View?) = loadExercises()
-                }
-                makeSnackbar(R.string.error_loading_exercises, R.string.retry, retryListener)
-                loadingInProgress.onNext(false)
-            })
+        ExerciseClient.loadExercises(categoryId)
     }
 
     private fun setRecyclerViewScrollListener() {
@@ -121,7 +87,7 @@ class MainActivity : AppCompatActivity(), CategoryFilterDialogFragment.Filterabl
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
 
-                if (lastExerciseResult == null) {
+                if (ExerciseClient.results.none()) {
                     return
                 }
                 val linearLayoutManager: LinearLayoutManager =
@@ -132,16 +98,16 @@ class MainActivity : AppCompatActivity(), CategoryFilterDialogFragment.Filterabl
                 val firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition()
 
                 val isNotLoadingAndNotLastPage =
-                    !loadingInProgress.value && lastExerciseResult?.next != null
+                    !(ExerciseClient.loadingInProgress.value || ExerciseClient.loadedAllResults)
                 val isAtLastItem = firstVisibleItemPosition + visibleItemCount >= totalItemCount
                 val isValidFirstItem = firstVisibleItemPosition >= 0
-                val totalIsMoreThanVisible = totalItemCount >= lastExerciseResult!!.results.count()
+                val totalIsMoreThanVisible = totalItemCount >= ExerciseClient.results.count()
 
                 val shouldLoadMore = isNotLoadingAndNotLastPage && isAtLastItem
                         && isValidFirstItem && totalIsMoreThanVisible
 
                 if (shouldLoadMore) {
-                    loadExercises()
+                    ExerciseClient.loadExercises()
                 }
             }
         }
@@ -149,7 +115,7 @@ class MainActivity : AppCompatActivity(), CategoryFilterDialogFragment.Filterabl
     }
 
     private fun openFilterMenu() {
-        val filterSheet = CategoryFilterDialogFragment.newInstance(selectedCategoryId)
+        val filterSheet = CategoryFilterDialogFragment.newInstance(ExerciseClient.selectedCategory)
         filterSheet.filterListener = this
         filterSheet.show(supportFragmentManager, "filterDialogFragment")
     }
