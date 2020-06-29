@@ -8,6 +8,20 @@ I believe that I was able to fully implement all of the user stories described i
 
 As my first experience with Kotlin and one of my first with building Android applications in this way, I thoroughly enjoyed it and learned a great deal.
 
+## Table of Contents
+
+1. [How To Install](#how-to-install)
+    * [Build](#build)
+    * [Installation](#installation)
+2. [Decisions & Assumptions](#decisions--assumptions)
+    * [Implementation Language](#implementation-language)
+    * [Search Implementation](#search-implementation)
+    * [Assumptions](#assumptions)
+3. [Known Issues](#known-issues)
+    * [Search Bar Hint](#search-bar-hint-not-customised)
+    * [One Page of Images](#only-one--page--of-images-loaded-per-exercise)
+    * [Infrequent Crashes](#infrequent-crashes)
+
 ## How To Install
 
 ### Build
