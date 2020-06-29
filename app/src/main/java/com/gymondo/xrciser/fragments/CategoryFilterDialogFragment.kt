@@ -59,7 +59,6 @@ class CategoryFilterDialogFragment : BottomSheetDialogFragment() {
 
     companion object {
 
-        // TODO: Customize parameters
         fun newInstance(selectedId: Int?): CategoryFilterDialogFragment =
             CategoryFilterDialogFragment().apply {
                 arguments = Bundle().apply {
