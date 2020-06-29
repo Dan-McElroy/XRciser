@@ -9,6 +9,7 @@ data class ExerciseImage (
     val status: String,
     @SerializedName("image")
     val url: String,
+    @SerializedName("is_main")
     val isMain: Boolean,
     val license: Int,
     @SerializedName("exercise")
