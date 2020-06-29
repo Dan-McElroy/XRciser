@@ -39,7 +39,7 @@ class ExerciseInfoActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_exercise_info)
 
-        appBar = findViewById(R.id.topAppBar)
+        appBar = findViewById(R.id.top_app_bar)
         setSupportActionBar(appBar)
 
         exerciseName = findViewById(R.id.exercise_name)

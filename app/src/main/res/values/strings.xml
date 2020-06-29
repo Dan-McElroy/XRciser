@@ -13,10 +13,12 @@
     <string name="not_found_equipment">Equipment not found</string>
     <string name="not_found_muscles">Muscle(s) not found</string>
     <string name="search">Search</string>
-    <string name="search_hint_text">Search for an exercise by name...</string>
+    <string name="search_hint_text">Search for an Exercise by name...</string>
+    <string name="no_search_results_header">No Exercises found</string>
+    <string name="no_search_results_description">No Exercises could be found with that search term. Try again with a different search term.</string>
     <string name="filter">Filter</string>
     <string name="filter_option_reset">All</string>
-    <string name="content_description_filter">See all exercises for:</string>
-    <string name="error_loading_exercises">Failed to load exercises.</string>
+    <string name="content_description_filter">See all Exercises for:</string>
+    <string name="error_loading_exercises">Failed to load Exercises.</string>
     <string name="retry">Retry?</string>
 </resources>

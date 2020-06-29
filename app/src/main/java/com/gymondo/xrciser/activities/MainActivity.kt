@@ -3,11 +3,12 @@ package com.gymondo.xrciser.activities
 import android.app.SearchManager
 import android.app.SearchableInfo
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.LinearLayout
 import android.widget.ProgressBar
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
@@ -25,13 +26,17 @@ class MainActivity : AppCompatActivity(), CategoryFilterDialogFragment.Filterabl
 
     lateinit var recyclerView: RecyclerView
     lateinit var loadingSpinner: ProgressBar
+    lateinit var noSearchResultsDisplay: LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setSupportActionBar(findViewById(R.id.topAppBar))
+        setSupportActionBar(findViewById(R.id.top_app_bar))
         recyclerView = findViewById(R.id.recycler_view)
         setRecyclerViewScrollListener()
+
+        noSearchResultsDisplay = findViewById(R.id.no_search_results)
+        noSearchResultsDisplay.visibility = View.INVISIBLE
 
         // Set up adapter
         recyclerView.adapter = ExerciseAdapter(ExerciseClient.results, this)
@@ -42,14 +47,21 @@ class MainActivity : AppCompatActivity(), CategoryFilterDialogFragment.Filterabl
         ExerciseClient.loadingInProgress
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { loading -> loadingSpinner.isVisible = loading }
+            .subscribe {
+                loading -> loadingSpinner.isVisible = loading
+                val noSearchResults = ExerciseClient.results.none()
+                        && !(ExerciseClient.currentSearchTerm.isNullOrBlank() || loading)
+                noSearchResultsDisplay.visibility = if (noSearchResults) View.VISIBLE else View.INVISIBLE
+            }
 
         ExerciseClient.resultsChanged
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { recyclerView.adapter!!.notifyDataSetChanged() }
+            .subscribe {
+                recyclerView.adapter!!.notifyDataSetChanged()
+            }
 
-        topAppBar.setOnMenuItemClickListener { menuItem ->
+        top_app_bar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.filter -> {
                     openFilterMenu()
