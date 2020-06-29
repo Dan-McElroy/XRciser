@@ -2,6 +2,7 @@ package com.gymondo.xrciser.activities
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -58,16 +59,14 @@ class ExerciseAdapter(private var exerciseList: List<Exercise>, private val cont
 
     private fun loadImage(holder: ExerciseViewHolder, exercise: Exercise) {
 
-        val imageRequest = ImageClient.getImagesForExercise(exercise.id)
-        imageRequest.subscribe { images ->
-            if (images.isEmpty()) {
-                return@subscribe
-            }
-            Picasso.get().load(images.sortedBy { image -> image.isMain }[0].url)
+        val imageRequest = ImageClient.getMainImageForExercise(exercise.id)
+        imageRequest.subscribe ({ image ->
+            Picasso.get().load(image.url)
                 .placeholder(R.drawable.ic_hourglass_empty)
                 .error(R.drawable.ic_error_outline)
                 .into(holder.image)
-        }
+            },
+        { Log.d("Images", "No image for exercise ${exercise.id}, showing placeholder.")})
     }
 
     private fun loadEquipment(holder: ExerciseViewHolder, exercise: Exercise) {
@@ -86,9 +85,7 @@ class ExerciseAdapter(private var exerciseList: List<Exercise>, private val cont
             }.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                { listText ->
-                    val equipment = context.getString(R.string.equipment)
-                    holder.equipmentList.text = "$equipment $listText" },
+                { listText -> holder.equipmentList.text = "$equipment $listText" },
                 { holder.equipmentList.text = XRciserApp.context.getString(R.string.not_found_equipment) }
             )
     }
@@ -137,7 +134,7 @@ class ExerciseAdapter(private var exerciseList: List<Exercise>, private val cont
             val intent = Intent(v!!.context, ExerciseInfoActivity::class.java).apply {
                 putExtra(EXERCISE_ID, exercise.id)
             }
-            startActivity(v!!.context, intent, null)
+            startActivity(v.context, intent, null)
         }
     }
 }

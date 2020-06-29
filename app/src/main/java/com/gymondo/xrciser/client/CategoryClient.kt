@@ -2,6 +2,7 @@ package com.gymondo.xrciser.client
 
 import com.gymondo.xrciser.data.Category
 import com.gymondo.xrciser.data.PagedResult
+import com.gymondo.xrciser.services.CategoryService
 import com.gymondo.xrciser.services.ExerciseService
 import io.reactivex.Maybe
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -16,7 +17,7 @@ object CategoryClient {
         if (categories.containsKey(id)) {
             return Maybe.just(categories[id]!!)
         }
-        val observable = ExerciseService.create().getCategory(id)
+        val observable = CategoryService.create().getCategory(id)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
 
@@ -28,7 +29,7 @@ object CategoryClient {
     fun getAllCached() : List<Category> = categories.values.toList()
 
     init {
-        ExerciseService.create().getCategories()
+        CategoryService.create().getPage()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(this::initPage)
@@ -39,7 +40,7 @@ object CategoryClient {
             categories[category.id] = category
         }
         if (result.next != null) {
-            ExerciseService.create().getCategoryPage(result.next)
+            CategoryService.create().getPage(result.next)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::initPage)

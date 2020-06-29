@@ -55,7 +55,7 @@ class ExerciseInfoActivity : AppCompatActivity() {
     private fun loadExercise() {
         exerciseId = intent.getIntExtra(EXERCISE_ID, -1)
 
-        ExerciseService.create().getExerciseInfo(exerciseId)
+        ExerciseService.create().getInfo(exerciseId)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe ({ info ->

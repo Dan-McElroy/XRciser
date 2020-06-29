@@ -60,7 +60,7 @@ object ExerciseClient {
 
         val service = ExerciseService.create()
 
-        val pageRequest = if (shouldRefresh) service.getExercises(selectedCategory) else service.getExercisePage(nextPageUrl!!)
+        val pageRequest = if (shouldRefresh) service.getPage(selectedCategory) else service.getPage(nextPageUrl!!)
 
         pageRequest
             .subscribeOn(Schedulers.io())
@@ -89,7 +89,7 @@ object ExerciseClient {
 
         nextPageUrl = result.next
         if (nextPageUrl is String) {
-            ExerciseService.create().getExercisePage(nextPageUrl!!)
+            ExerciseService.create().getPage(nextPageUrl!!)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ result -> receivePagedResult(result, filteredResults.toList()) },
