@@ -5,9 +5,13 @@
     <string name="title_activity_exercise">Exercise</string>
     <string name="front">(Front)</string>
     <string name="back">(Back)</string>
+    <string name="none">None</string>
     <string name="equipment">Equipment Required:</string>
     <string name="muscles">Muscles Used:</string>
     <string name="category">Category:</string>
+    <string name="not_found_category">Category not found</string>
+    <string name="not_found_equipment">Equipment not found</string>
+    <string name="not_found_muscles">Muscle(s) not found</string>
     <string name="search">Search</string>
     <string name="search_hint_text">Search for an exercise by name...</string>
     <string name="filter">Filter</string>

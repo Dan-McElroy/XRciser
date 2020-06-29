@@ -112,12 +112,12 @@ class ExerciseInfoActivity : AppCompatActivity() {
 
     private fun addEquipmentText(equipment: Equipment?) {
         val textView = addTextRow(equipmentList)
-        textView.text = if (equipment is Equipment) equipment.name else "None"
+        textView.text = if (equipment is Equipment) equipment.name else getString(R.string.none)
     }
 
     private fun addMuscleText(muscle: Muscle?) {
         val textView = addTextRow(muscleList)
-        textView.text = if (muscle is Muscle) muscle.toString() else "None"
+        textView.text = if (muscle is Muscle) muscle.toString() else getString(R.string.none)
     }
 
     private fun addTextRow(layout : LinearLayout) : TextView {

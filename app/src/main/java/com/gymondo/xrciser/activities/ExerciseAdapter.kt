@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.gymondo.xrciser.R
+import com.gymondo.xrciser.applications.XRciserApp
 import com.gymondo.xrciser.client.CategoryClient
 import com.gymondo.xrciser.client.EquipmentClient
 import com.gymondo.xrciser.client.ImageClient
@@ -52,7 +53,7 @@ class ExerciseAdapter(private var exerciseList: List<Exercise>, private val cont
         CategoryClient.getCategory(exercise.category)
             .subscribe(
                 { response -> holder.categoryName.text = response.name},
-                { holder.categoryName.text = "Category not found"})
+                { holder.categoryName.text = XRciserApp.context.getString(R.string.not_found_category)})
     }
 
     private fun loadImage(holder: ExerciseViewHolder, exercise: Exercise) {
@@ -76,7 +77,8 @@ class ExerciseAdapter(private var exerciseList: List<Exercise>, private val cont
         val equipment = context.getString(R.string.equipment)
 
         if (exercise.equipment.none()) {
-            holder.equipmentList.text = "$equipment None"
+            val none = context.getString(R.string.none)
+            holder.equipmentList.text = "$equipment $none"
         }
 
         val equipmentRequests : List<Observable<Equipment>> = exercise.equipment.map(EquipmentClient::getEquipment)
@@ -89,7 +91,7 @@ class ExerciseAdapter(private var exerciseList: List<Exercise>, private val cont
                 { listText ->
                     val equipment = context.getString(R.string.equipment)
                     holder.equipmentList.text = "$equipment $listText" },
-                { holder.equipmentList.text = "Equipment not found." }
+                { holder.equipmentList.text = XRciserApp.context.getString(R.string.not_found_equipment) }
             )
     }
 
@@ -98,7 +100,8 @@ class ExerciseAdapter(private var exerciseList: List<Exercise>, private val cont
         val muscles = context.getString(R.string.muscles)
 
         if (exercise.allMuscles.none()) {
-            holder.muscleList.text = "$muscles None"
+            val none = context.getString(R.string.none)
+            holder.muscleList.text = "$muscles $none"
         }
 
         val muscleRequests : List<Observable<Muscle>> = exercise.allMuscles.map(MuscleClient::getMuscle)
@@ -109,7 +112,7 @@ class ExerciseAdapter(private var exerciseList: List<Exercise>, private val cont
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { listText -> holder.muscleList.text = "$muscles $listText" },
-                { holder.muscleList.text = "Muscle(s) not found." }
+                { holder.muscleList.text = XRciserApp.context.getString(R.string.not_found_muscles) }
             )
     }
 

@@ -10,18 +10,8 @@ import android.widget.RadioGroup
 import com.gymondo.xrciser.R
 import com.gymondo.xrciser.client.CategoryClient
 
-// TODO: Customize parameter argument names
 const val SELECTED_CATEGORY_ID = "selected_category"
 
-/**
- *
- * A fragment that shows a list of items as a modal bottom sheet.
- *
- * You can show this modal bottom sheet from your activity like this:
- * <pre>
- *    CategoryFilterDialogFragment.newInstance(30).show(supportFragmentManager, "dialog")
- * </pre>
- */
 class CategoryFilterDialogFragment : BottomSheetDialogFragment() {
 
     lateinit var filterListener : Filterable
