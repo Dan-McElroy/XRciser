@@ -12,7 +12,8 @@ import java.util.concurrent.TimeUnit
 
 interface ExerciseService {
 
-    @GET("exercise?status=2")
+
+    @GET("exercise?status=2&language=2")
     fun getExercises(@Query("category") categoryId: Int? = null) : Maybe<PagedResult<Exercise>>
 
     @GET("exerciseinfo/{id}")
