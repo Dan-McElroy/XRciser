@@ -34,9 +34,9 @@
             android:layout_alignParentLeft="true"
             android:paddingTop="12dp"
             android:paddingBottom="12dp"
-            android:maxLines="1"/>
+            android:maxLines="1"
+            android:textStyle="bold" />
         <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/RelativeLayout01"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:paddingTop="5dp"
