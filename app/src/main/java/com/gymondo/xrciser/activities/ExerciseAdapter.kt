@@ -61,13 +61,11 @@ class ExerciseAdapter(private var exerciseList: List<Exercise>, private val cont
         val imageRequest = ImageClient.getImagesForExercise(exercise.id)
         imageRequest.subscribe { images ->
             if (images.isEmpty()) {
-                Picasso.get().load(R.drawable.exercise).into(holder.image)
                 return@subscribe
             }
-            // TODO("Edge(?) case where exercise could have all non-main images")
-            Picasso.get().load(images[0].url)
-                .placeholder(R.drawable.ic_hourglass_empty_24px)
-                .error(R.drawable.ic_error_outline_24px)
+            Picasso.get().load(images.sortedBy { image -> image.isMain }[0].url)
+                .placeholder(R.drawable.ic_hourglass_empty)
+                .error(R.drawable.ic_error_outline)
                 .into(holder.image)
         }
     }

@@ -1,7 +1,9 @@
 <resources>
-    <dimen name="fab_margin">16dp</dimen>
-    <dimen name="info_image_width">240dp</dimen>
-    <dimen name="info_image_height">180dp</dimen>
+    <dimen name="info_image_width">100dp</dimen>
+    <dimen name="info_image_height">150dp</dimen>
+    <dimen name="card_image_height">200dp</dimen>
+    <dimen name="icon_image_width">140dp</dimen>
+    <dimen name="icon_image_height">140dp</dimen>
     <dimen name="list_item_spacing">16dp</dimen>
     <dimen name="list_item_spacing_half">8dp</dimen>
 </resources>
