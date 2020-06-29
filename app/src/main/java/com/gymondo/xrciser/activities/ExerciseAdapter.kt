@@ -54,7 +54,7 @@ class ExerciseAdapter(private var exerciseList: List<Exercise>, private val cont
         CategoryClient.getCategory(exercise.category)
             .subscribe(
                 { response -> holder.categoryName.text = response.name},
-                { holder.categoryName.text = XRciserApp.context.getString(R.string.not_found_category)})
+                { holder.categoryName.text = XRciserApp.appContext.getString(R.string.not_found_category)})
     }
 
     private fun loadImage(holder: ExerciseViewHolder, exercise: Exercise) {
@@ -86,7 +86,7 @@ class ExerciseAdapter(private var exerciseList: List<Exercise>, private val cont
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { listText -> holder.equipmentList.text = "$equipment $listText" },
-                { holder.equipmentList.text = XRciserApp.context.getString(R.string.not_found_equipment) }
+                { holder.equipmentList.text = XRciserApp.appContext.getString(R.string.not_found_equipment) }
             )
     }
 
@@ -107,7 +107,7 @@ class ExerciseAdapter(private var exerciseList: List<Exercise>, private val cont
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { listText -> holder.muscleList.text = "$muscles $listText" },
-                { holder.muscleList.text = XRciserApp.context.getString(R.string.not_found_muscles) }
+                { holder.muscleList.text = XRciserApp.appContext.getString(R.string.not_found_muscles) }
             )
     }
 

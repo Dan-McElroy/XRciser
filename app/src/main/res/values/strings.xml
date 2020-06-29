@@ -20,5 +20,6 @@
     <string name="filter_option_reset">All</string>
     <string name="content_description_filter">See all Exercises for:</string>
     <string name="error_loading_exercises">Failed to load Exercises.</string>
+    <string name="error_loading_exercise_info">Failed to load information for this exercise.</string>
     <string name="retry">Retry?</string>
 </resources>

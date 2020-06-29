@@ -11,7 +11,7 @@ data class Muscle (
     val isFront: Boolean
 ) {
     override fun toString(): String {
-        val sideText = XRciserApp.context.getString(
+        val sideText = XRciserApp.appContext.getString(
             if (isFront) string.front else string.back
         )
         return "$name $sideText"

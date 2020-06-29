@@ -15,6 +15,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.gymondo.xrciser.R
+import com.gymondo.xrciser.applications.XRciserApp
 import com.gymondo.xrciser.client.ExerciseClient
 import com.gymondo.xrciser.fragments.CategoryFilterDialogFragment
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -34,6 +35,7 @@ class MainActivity : AppCompatActivity(), CategoryFilterDialogFragment.Filterabl
         setSupportActionBar(findViewById(R.id.top_app_bar))
         recyclerView = findViewById(R.id.recycler_view)
         setRecyclerViewScrollListener()
+        XRciserApp.currentActivity = this
 
         noSearchResultsDisplay = findViewById(R.id.no_search_results)
         noSearchResultsDisplay.visibility = View.INVISIBLE

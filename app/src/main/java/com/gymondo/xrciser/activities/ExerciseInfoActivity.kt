@@ -2,6 +2,7 @@ package com.gymondo.xrciser.activities
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -9,11 +10,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.text.HtmlCompat
 import com.google.android.material.appbar.MaterialToolbar
 import com.gymondo.xrciser.R
+import com.gymondo.xrciser.applications.XRciserApp
 import com.gymondo.xrciser.client.ImageClient
 import com.gymondo.xrciser.data.Equipment
 import com.gymondo.xrciser.data.ExerciseImage
 import com.gymondo.xrciser.data.ExerciseInfo
 import com.gymondo.xrciser.data.Muscle
+import com.gymondo.xrciser.extensions.makeSnackbar
 import com.gymondo.xrciser.services.ExerciseService
 import com.squareup.picasso.Picasso
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -49,6 +52,8 @@ class ExerciseInfoActivity : AppCompatActivity() {
         equipmentList = findViewById(R.id.equipment_list)
         muscleList = findViewById(R.id.muscle_list)
 
+        XRciserApp.currentActivity = this
+
         loadExercise()
     }
 
@@ -61,8 +66,9 @@ class ExerciseInfoActivity : AppCompatActivity() {
             .subscribe ({ info ->
                 this.exerciseInfo = info
                 renderExercise()
-            },
-            { TODO("Present error message about not finding the exercise") })
+            }, { makeSnackbar(R.string.error_loading_exercise_info, R.string.retry,
+                View.OnClickListener { loadExercise() })
+            })
     }
 
     private fun renderExercise() {

@@ -1,7 +1,11 @@
 package com.gymondo.xrciser.client
 
+import android.view.View
+import com.gymondo.xrciser.R
+import com.gymondo.xrciser.applications.XRciserApp
 import com.gymondo.xrciser.data.Exercise
 import com.gymondo.xrciser.data.PagedResult
+import com.gymondo.xrciser.extensions.makeSnackbar
 import com.gymondo.xrciser.services.ExerciseService
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -93,7 +97,11 @@ object ExerciseClient {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ result -> receivePagedResult(result, filteredResults.toList()) },
-                    { TODO("Throw an error here to be handled in the activity with a Snackbar") })
+                    { XRciserApp.currentActivity.makeSnackbar(
+                        R.string.error_loading_exercises,
+                        R.string.retry,
+                        View.OnClickListener { receivePagedResult(result, resultsForPage) }
+                    ) })
         }
         else {
             updateShownResults(filteredResults.toList())

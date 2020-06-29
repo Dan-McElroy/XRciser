@@ -1,5 +1,6 @@
 package com.gymondo.xrciser.applications
 
+import android.app.Activity
 import android.app.Application
 import android.content.Context
 
@@ -7,12 +8,14 @@ class XRciserApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        context = this
+        appContext = this
     }
 
     companion object {
 
-        lateinit var context : Context
+        lateinit var appContext : Context
             private set
+
+        lateinit var currentActivity: Activity
     }
 }
