@@ -11,47 +11,45 @@ import io.reactivex.subjects.Subject
 
 object ExerciseClient {
 
-    private val pageSize : Int = 20
-    private var shownResults : ArrayList<Exercise> = ArrayList()
+    private const val pageSize : Int = 20
     private var nextPageUrl : String? = null
-    private var filteredCategoryId : Int? = null
-    private var filteredSearchTerm : String? = null
     private var resultsChangedPrompt : Subject<Unit> = BehaviorSubject.create()
 
     var loadingInProgress: BehaviorSubject<Boolean> = BehaviorSubject.create()
 
-    var results : List<Exercise> = shownResults
-        get() = shownResults
+    var results : ArrayList<Exercise> = ArrayList()
+        private set
 
     var resultsChanged : Observable<Unit> = resultsChangedPrompt
-        get() = resultsChangedPrompt
+        private set
 
-    var selectedCategory : Int? = filteredCategoryId
-        get() = filteredCategoryId
+    var selectedCategory : Int? = null
+        private set
+
+    var currentSearchTerm : String? = null
+        private set
 
     var loadedAllResults: Boolean = false
         get() = !loadingInProgress.value && nextPageUrl == null
 
-    var currentSearchTerm = filteredSearchTerm
-        get() = filteredSearchTerm
 
     init {
         loadingInProgress.onNext(false)
 
     }
 
-    fun loadExercises(categoryId : Int? = filteredCategoryId, searchTerm: String? = filteredSearchTerm) {
+    fun loadExercises(categoryId : Int? = selectedCategory, searchTerm: String? = currentSearchTerm) {
 
         loadingInProgress.onNext(true)
 
         val trimmedSearchTerm = searchTerm?.trim()
 
-        val shouldRefresh = shownResults.none()
-                || filteredCategoryId != categoryId
-                || filteredSearchTerm != trimmedSearchTerm
+        val shouldRefresh = results.none()
+                || selectedCategory != categoryId
+                || currentSearchTerm != trimmedSearchTerm
 
-        filteredCategoryId = categoryId
-        filteredSearchTerm = trimmedSearchTerm
+        selectedCategory = categoryId
+        currentSearchTerm = trimmedSearchTerm
 
         if (shouldRefresh) {
             clearShownResults()
@@ -62,7 +60,7 @@ object ExerciseClient {
 
         val service = ExerciseService.create()
 
-        val pageRequest = if (shouldRefresh) service.getExercises(filteredCategoryId) else service.getExercisePage(nextPageUrl!!)
+        val pageRequest = if (shouldRefresh) service.getExercises(selectedCategory) else service.getExercisePage(nextPageUrl!!)
 
         pageRequest
             .subscribeOn(Schedulers.io())
@@ -72,16 +70,16 @@ object ExerciseClient {
     }
 
     private fun receivePagedResult(result : PagedResult<Exercise>, resultsForPage : List<Exercise> ) {
-        if (filteredSearchTerm.isNullOrBlank()) {
+        if (currentSearchTerm.isNullOrBlank()) {
             updateShownResults(result.results)
             nextPageUrl = result.next
             loadingInProgress.onNext(false)
             return
         }
 
-        val filteredResults = result.results.filter { exercise -> exercise.nameMatches(filteredSearchTerm!!) }
+        val filteredResults = result.results.filter { exercise -> exercise.nameMatches(currentSearchTerm!!) }
             .union(resultsForPage)
-            .minus(shownResults)
+            .minus(results)
         if (filteredResults.count() >= pageSize) {
             // We don't change nextPageUrl here, as we want to reload this "server page" and take the rest of it
             // for the next "client page".
@@ -103,14 +101,13 @@ object ExerciseClient {
         }
     }
 
-    private fun updateShownResults(results : List<Exercise>) {
-        shownResults.addAll(results)
+    private fun updateShownResults(newResults : List<Exercise>) {
+        results.addAll(newResults)
         resultsChangedPrompt.onNext(Unit)
     }
 
     private fun clearShownResults() {
-        shownResults.clear()
+        results.clear()
         resultsChangedPrompt.onNext(Unit)
     }
-
 }
