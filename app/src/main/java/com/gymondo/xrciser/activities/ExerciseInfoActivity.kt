@@ -85,13 +85,15 @@ class ExerciseInfoActivity : AppCompatActivity() {
 
     private fun loadImages() {
         val imageRequest = ImageClient.getImagesForExercise(exerciseId)
-        imageRequest.subscribe { images ->
+        imageRequest.subscribe( { images ->
             if (images.isEmpty()) {
                 addImageView(null)
                 return@subscribe
             }
-            images.forEach(this::addImageView)
-        }
+            images.sortedBy { image -> image.isMain }.forEach(this::addImageView)
+        },
+        { addErrorImage() })
+
     }
 
     private fun addImageView(image : ExerciseImage?) {
@@ -106,6 +108,12 @@ class ExerciseInfoActivity : AppCompatActivity() {
             Picasso.get().load(R.drawable.exercise)
                 .into(imageView)
         }
+    }
+
+    private fun addErrorImage() {
+        val imageView = addImage()
+        Picasso.get().load(R.drawable.ic_error_outline)
+            .into(imageView)
     }
 
     private fun addEquipmentText(equipment: Equipment?) {
