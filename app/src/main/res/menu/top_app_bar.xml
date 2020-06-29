@@ -2,17 +2,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/filter"
-        android:icon="@drawable/ic_filter_24dp"
-        android:title="@string/filter"
-        android:contentDescription="@string/content_description_filter"
-        app:showAsAction="ifRoom" />
-
-    <item
         android:id="@+id/search"
         android:icon="@drawable/ic_search_24px"
         app:showAsAction="always|collapseActionView"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         android:title="@string/search"/>
+
+    <item
+        android:id="@+id/filter"
+        android:icon="@drawable/ic_filter_24dp"
+        android:title="@string/filter"
+        android:contentDescription="@string/content_description_filter"
+        app:showAsAction="ifRoom" />
 
 </menu>
