@@ -1,17 +1,12 @@
 package com.gymondo.xrciser.activities
 
 import android.os.Bundle
-import android.text.Layout
-import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.view.View.inflate
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.RelativeLayout
 import android.widget.TextView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.appbar.MaterialToolbar
 import com.gymondo.xrciser.R
 import com.gymondo.xrciser.client.ImageClient
 import com.gymondo.xrciser.data.Equipment
@@ -30,6 +25,8 @@ class ExerciseInfoActivity : AppCompatActivity() {
     private var exerciseId: Int = -1
     private lateinit var exerciseInfo : ExerciseInfo
 
+    private lateinit var appBar: MaterialToolbar
+
     private lateinit var exerciseName: TextView
     private lateinit var categoryName: TextView
     private lateinit var imageList: LinearLayout
@@ -39,7 +36,9 @@ class ExerciseInfoActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_exercise_info)
-        setSupportActionBar(findViewById(R.id.toolbar))
+
+        appBar = findViewById(R.id.topAppBar)
+        setSupportActionBar(appBar)
 
         exerciseName = findViewById(R.id.exercise_name)
         categoryName = findViewById(R.id.category_name)
@@ -64,6 +63,7 @@ class ExerciseInfoActivity : AppCompatActivity() {
     }
 
     private fun renderExercise() {
+        appBar.title = exerciseInfo.name
         exerciseName.text = exerciseInfo.name
         categoryName.text = exerciseInfo.category.name
 
