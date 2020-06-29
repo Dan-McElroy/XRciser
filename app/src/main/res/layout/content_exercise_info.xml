@@ -39,7 +39,6 @@
             app:contentPadding="12dp">
 
             <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/RelativeLayout01"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:paddingTop="5dp"
@@ -51,7 +50,8 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_marginTop="25dp"
-                    android:maxLines="1"/>
+                    android:maxLines="1"
+                    android:textStyle="bold"/>
 
                 <TextView
                     android:id="@+id/category_name"
@@ -73,16 +73,32 @@
 
 
             <LinearLayout
-                android:id="@+id/equipment_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:baselineAligned="false">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:maxLines="1"
-                    android:text="@string/equipment" />
+                    android:text="@string/equipment"
+                    android:textStyle="italic" />
+                
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:id="@+id/equipment_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:baselineAligned="false">
+
+                    </LinearLayout>
+
+                </ScrollView>
 
             </LinearLayout>
 
@@ -95,7 +111,6 @@
             app:contentPadding="12dp">
 
             <LinearLayout
-                android:id="@+id/muscle_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
@@ -105,7 +120,23 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:maxLines="1"
-                    android:text="@string/muscles" />
+                    android:text="@string/muscles"
+                    android:textStyle="italic"/>
+
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:id="@+id/muscle_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:orientation="vertical">
+
+                    </LinearLayout>
+
+                </ScrollView>
 
             </LinearLayout>
 
