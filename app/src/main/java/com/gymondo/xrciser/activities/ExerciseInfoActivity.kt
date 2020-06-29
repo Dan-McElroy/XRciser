@@ -79,7 +79,6 @@ class ExerciseInfoActivity : AppCompatActivity() {
             addEquipmentText(null)
         }
 
-        // TODO("Split out muscles and secondary muscles in view")
         if (exerciseInfo.allMuscles.any()) {
             exerciseInfo.allMuscles.forEach(this::addMuscleText)
         } else {
