@@ -6,6 +6,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.text.HtmlCompat
 import com.google.android.material.appbar.MaterialToolbar
 import com.gymondo.xrciser.R
 import com.gymondo.xrciser.client.ImageClient
@@ -29,6 +30,7 @@ class ExerciseInfoActivity : AppCompatActivity() {
 
     private lateinit var exerciseName: TextView
     private lateinit var categoryName: TextView
+    private lateinit var description: TextView
     private lateinit var imageList: LinearLayout
     private lateinit var equipmentList: LinearLayout
     private lateinit var muscleList: LinearLayout
@@ -42,6 +44,7 @@ class ExerciseInfoActivity : AppCompatActivity() {
 
         exerciseName = findViewById(R.id.exercise_name)
         categoryName = findViewById(R.id.category_name)
+        description = findViewById(R.id.description)
         imageList = findViewById(R.id.image_list)
         equipmentList = findViewById(R.id.equipment_list)
         muscleList = findViewById(R.id.muscle_list)
@@ -65,6 +68,7 @@ class ExerciseInfoActivity : AppCompatActivity() {
     private fun renderExercise() {
         appBar.title = exerciseInfo.name
         exerciseName.text = exerciseInfo.name
+        description.text = HtmlCompat.fromHtml(exerciseInfo.description, HtmlCompat.FROM_HTML_MODE_LEGACY)
         categoryName.text = exerciseInfo.category.name
 
         loadImages()
