@@ -59,6 +59,12 @@ The implementation of this design is maybe a little convoluted, as it involves a
 
 Despite this functionality feeling somehow overengineered, I believe it's quite robust.
 
+### App-wide singletons via XRciser App
+
+I've introduced two app-wide singletons via `XRciserApp`, a subclass of `Application`. These expose the app context, and the current activity.
+
+It's a messy approach to being able to access certain Android-related properties from within a POJO, but as it's my first project of this type I'm so far unaware of a better solution. The app context singleton is used generally to get string resources and set text fields, and the activity is used to make Snackbar messages appear for error handling. In the future, I would find a cleaner solution as these singletons open these values up to abuse, and mandate that new activities set the singleton in their `onCreate` method for the app to function properly.
+
 ### Assumptions
 
 The following is a list of assumptions I made about the intended design of the application that was not fully clear from the provided specifications:
